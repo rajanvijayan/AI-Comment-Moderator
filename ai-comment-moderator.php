@@ -15,7 +15,6 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 }
 
 use AICommentModerator\Admin\SettingsPage;
-use AICommentModerator\Admin\LogsPage;
 use AICommentModerator\Cron\SpamCheckCron;
 use AICommentModerator\Moderation\CommentModerator;
 
@@ -24,7 +23,6 @@ function ai_comment_moderator_init() {
     // Load admin settings and logs page
     if ( is_admin() ) {
         new SettingsPage();
-        new LogsPage();
     }
 
     // Initialize comment moderation module
