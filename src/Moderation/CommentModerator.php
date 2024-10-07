@@ -51,9 +51,7 @@ class CommentModerator {
     
         // Get the AI response
         $response = $ai_client->generateContent($prompt);
-    
-        error_log( 'AI response: ' . print_r( $response, true ) );
-    
+        
         // 1. Check if $response is already an array
         if (is_array($response)) {
             $response_data = $response;  // No need for json_decode, already an array
