@@ -117,23 +117,26 @@ class CommentModerator {
     public function send_auto_reply( $comment_id ) {
         // Get the reply message from comment meta
         $reply_message = get_comment_meta( $comment_id, '_ai_reply_message', true );
-
+    
         // If a reply message exists, post it as a comment reply
         if ( $reply_message ) {
             $comment_data = get_comment( $comment_id );
-
+    
+            // Retrieve the user ID from the plugin settings
+            $moderator_user_id = get_option( 'moderator_user' );
+    
             // Prepare reply comment data
             $reply_data = [
                 'comment_post_ID' => $comment_data->comment_post_ID,
                 'comment_parent'  => $comment_data->comment_ID,
                 'comment_content' => $reply_message,
-                'user_id'         => get_current_user_id(), // Assume this is the moderator or system
+                'user_id'         => $moderator_user_id, // Use the moderator user ID from settings
                 'comment_approved'=> 1, // Auto approve reply
             ];
-
+    
             // Insert the reply comment
             wp_insert_comment( $reply_data );
-
+    
             // Clean up the meta after posting the reply
             delete_comment_meta( $comment_id, '_ai_reply_message' );
             delete_comment_meta( $comment_id, '_ai_reply_time' );

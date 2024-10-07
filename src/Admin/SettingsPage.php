@@ -23,6 +23,7 @@ class SettingsPage {
         register_setting( 'ai_comment_moderator_group', 'response_mode' );
         register_setting( 'ai_comment_moderator_group', 'response_relay_time' );
         register_setting( 'ai_comment_moderator_group', 'api_key' );
+        register_setting( 'ai_comment_moderator_group', 'moderator_user' ); // Register new setting for moderator user
     }
 
     public function create_settings_page() {
@@ -61,6 +62,29 @@ class SettingsPage {
                         <th scope="row">Response Relay Time (ms)</th>
                         <td>
                             <input type="number" name="response_relay_time" value="<?php echo esc_attr( get_option( 'response_relay_time', 1000 ) ); ?>" />
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Select Moderator</th>
+                        <td>
+                            <select name="moderator_user">
+                                <option value="">Select a Moderator</option>
+                                <?php
+                                // Get users with the role of moderator or higher
+                                $args = [
+                                    'role__in' => ['administrator', 'editor', 'moderator'],
+                                    'orderby' => 'display_name',
+                                    'order' => 'ASC',
+                                    'fields' => ['ID', 'display_name'],
+                                ];
+                                $users = get_users( $args );
+
+                                foreach ( $users as $user ) {
+                                    $selected = selected( get_option( 'moderator_user' ), $user->ID, false );
+                                    echo "<option value='{$user->ID}' $selected>{$user->display_name}</option>";
+                                }
+                                ?>
+                            </select>
                         </td>
                     </tr>
                 </table>
