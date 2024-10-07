@@ -9,7 +9,8 @@
         }
     },
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "rajanvijayan/ai-engine": "dev-main"
     },
     "scripts": {
         "post-autoload-dump": [
