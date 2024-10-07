@@ -19,7 +19,6 @@ class SettingsPage {
     }
 
     public function register_settings() {
-        register_setting( 'ai_comment_moderator_group', 'spam_score' );
         register_setting( 'ai_comment_moderator_group', 'auto_response' );
         register_setting( 'ai_comment_moderator_group', 'response_mode' );
         register_setting( 'ai_comment_moderator_group', 'response_relay_time' );
@@ -35,16 +34,6 @@ class SettingsPage {
                 <?php do_settings_sections( 'ai_comment_moderator_group' ); ?>
                 <h2>Basic Settings</h2>
                 <table class="form-table">
-                    <tr valign="top">
-                        <th scope="row">Allowed Spam Score</th>
-                        <td>
-                            <select name="spam_score">
-                                <?php for ( $i = 1; $i <= 10; $i++ ) : ?>
-                                    <option value="<?php echo esc_attr( $i ); ?>" <?php selected( get_option( 'spam_score' ), $i ); ?>><?php echo esc_html( $i ); ?></option>
-                                <?php endfor; ?>
-                            </select>
-                        </td>
-                    </tr>
                     <tr valign="top">
                         <th scope="row">Auto Response</th>
                         <td>

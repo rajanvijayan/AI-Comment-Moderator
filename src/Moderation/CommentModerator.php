@@ -30,30 +30,30 @@ class CommentModerator {
         // Get the comment content using the comment ID
         $comment = get_comment( $comment_ID );
         $comment_content = $comment->comment_content;
-
+    
         // Get AI API key from settings
         $api_key = get_option( 'api_key', '' );
         if ( empty( $api_key ) ) {
             error_log( 'API key is missing in the AI Comment Moderator plugin settings.' );
             return;
         }
-
+    
         // Initialize AI engine with API key
         $ai_client = new AIEngine( $api_key );
         $response_mode = get_option( 'response_mode', 'professional' );
-
+    
         // Response format for AI prompt
-        $response_format = "if it is spam { 'spam': true, 'spam_score': SPAM_SCORE } else { 'spam': false, comment_reply: 'REPLY MESSAGE BASED ON COMMENT' }, response mode should be '$response_mode'";
-
+        $response_format = "if it is spam { 'spam': true } else { 'spam': false, comment_reply: 'REPLY MESSAGE BASED ON COMMENT' }, response mode should be '$response_mode'";
+    
         // AI Prompt
         $prompt = "This is a blog post comment. Check if this is spam or not and return value in the following format: " 
                     . $response_format . " '" . $comment_content . "'";
-
+    
         // Get the AI response
         $response = $ai_client->generateContent($prompt);
-
+    
         error_log( 'AI response: ' . print_r( $response, true ) );
-
+    
         // 1. Check if $response is already an array
         if (is_array($response)) {
             $response_data = $response;  // No need for json_decode, already an array
@@ -62,21 +62,18 @@ class CommentModerator {
             $response = preg_replace("/'([^']+)'/", '"$1"', $response);  // Sanitize quotes
             $response_data = json_decode($response, true);
         }
-
-        // Get spam score from settings
-        $spam_score_threshold = (float) get_option( 'spam_score', 0.5 ); // Default spam score threshold is 0.5
-
-        // If the response says it's spam and the spam score exceeds the threshold, mark the comment as spam
-        if ( isset($response_data['spam']) && $response_data['spam'] === true && isset($response_data['spam_score']) && (float)$response_data['spam_score'] >= $spam_score_threshold ) {
+    
+        // If the response says it's spam, mark the comment as spam
+        if ( isset($response_data['spam']) && $response_data['spam'] === true ) {
             wp_spam_comment( $comment_ID );
         }
-
+    
         // If not spam, store the reply message and schedule it for later via cron (if auto-response is enabled)
         $auto_response = get_option( 'auto_response', 'off' );
-
+    
         if ( '1' === $auto_response ) {
             $reply_message = isset($response_data['comment_reply']) ? $response_data['comment_reply'] : 'Thank you for your comment!';
-
+    
             // Store reply message in comment meta to use later with cron job
             add_comment_meta( $comment_ID, '_ai_reply_message', $reply_message );
             add_comment_meta( $comment_ID, '_ai_reply_time', time() ); // Store the time the comment was approved
