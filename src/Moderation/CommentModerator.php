@@ -43,26 +43,16 @@ class CommentModerator {
         $response_mode = get_option( 'response_mode', 'professional' );
     
         // Response format for AI prompt
-        $response_format = "if it is spam { 'spam': true } else { 'spam': false, comment_reply: 'REPLY MESSAGE BASED ON COMMENT' }, response mode should be '$response_mode'";
+
+        $prompt = $comment_content." This is post comment, If it is not spam, generate and return a response message (string) based on the content. If it is spam, return false. The tone of the response should align with the $response_mode, and special characters should be ignored in the response message.";
     
         // AI Prompt
-        $prompt = "This is a blog post comment. Check if this is spam or not and return value in the following format: " 
-                    . $response_format . " '" . $comment_content . "'";
     
         // Get the AI response
-        $response = $ai_client->generateContent($prompt);
-        
-        // 1. Check if $response is already an array
-        if (is_array($response)) {
-            $response_data = $response;  // No need for json_decode, already an array
-        } else {
-            // 2. If it's a string, try to decode it into an array
-            $response = preg_replace("/'([^']+)'/", '"$1"', $response);  // Sanitize quotes
-            $response_data = json_decode($response, true);
-        }
+        $response_data = $ai_client->generateContent($prompt);
     
         // If the response says it's spam, mark the comment as spam
-        if ( isset($response_data['spam']) && $response_data['spam'] === true ) {
+        if ( isset($response_data) && $response_data === 'true' ) {
             wp_spam_comment( $comment_ID );
         }
     
@@ -70,7 +60,7 @@ class CommentModerator {
         $auto_response = get_option( 'auto_response', 'off' );
     
         if ( '1' === $auto_response ) {
-            $reply_message = isset($response_data['comment_reply']) ? $response_data['comment_reply'] : 'Thank you for your comment!';
+            $reply_message = isset($response_data) ? $response_data : 'Thank you for your comment!';
     
             // Store reply message in comment meta to use later with cron job
             add_comment_meta( $comment_ID, '_ai_reply_message', $reply_message );
