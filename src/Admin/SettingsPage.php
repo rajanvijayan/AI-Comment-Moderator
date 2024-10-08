@@ -21,7 +21,7 @@ class SettingsPage {
     public function register_settings() {
         register_setting( 'ai_comment_moderator_group', 'auto_response' );
         register_setting( 'ai_comment_moderator_group', 'response_mode' );
-        register_setting( 'ai_comment_moderator_group', 'response_relay_time' );
+        register_setting( 'ai_comment_moderator_group', 'cron_schedule_time' ); // Update setting to cron schedule time
         register_setting( 'ai_comment_moderator_group', 'api_key' );
         register_setting( 'ai_comment_moderator_group', 'moderator_user' ); // Register new setting for moderator user
     }
@@ -59,9 +59,21 @@ class SettingsPage {
                         </td>
                     </tr>
                     <tr valign="top">
-                        <th scope="row">Response Relay Time (ms)</th>
+                        <th scope="row">Cron Schedule Time</th>
                         <td>
-                            <input type="number" name="response_relay_time" value="<?php echo esc_attr( get_option( 'response_relay_time', 1000 ) ); ?>" />
+                            <select name="cron_schedule_time">
+                                <?php
+                                // Get the available cron schedules
+                                $schedules = wp_get_schedules();
+                                $selected_schedule = get_option( 'cron_schedule_time', 'hourly' );
+
+                                // Loop through each schedule and create an option for it
+                                foreach ( $schedules as $schedule_key => $schedule_data ) {
+                                    $selected = selected( $selected_schedule, $schedule_key, false );
+                                    echo "<option value='{$schedule_key}' $selected>{$schedule_data['display']}</option>";
+                                }
+                                ?>
+                            </select>
                         </td>
                     </tr>
                     <tr valign="top">

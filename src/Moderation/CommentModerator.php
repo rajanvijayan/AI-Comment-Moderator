@@ -8,12 +8,15 @@ class CommentModerator {
     public function __construct() {
         // Hook into comment submission to trigger moderation check
         add_action( 'comment_post', [ $this, 'check_comment' ], 10, 2 );
-
+    
+        // Get the saved cron schedule time from settings
+        $cron_schedule_time = get_option( 'cron_schedule_time', 'hourly' ); // Default to 'hourly' if not set
+    
         // Schedule a cron job if not already scheduled
         if ( ! wp_next_scheduled( 'ai_comment_moderation_cron' ) ) {
-            wp_schedule_event( time(), 'hourly', 'ai_comment_moderation_cron' );
+            wp_schedule_event( time(), $cron_schedule_time, 'ai_comment_moderation_cron' );
         }
-
+    
         // Attach the cron job callback
         add_action( 'ai_comment_moderation_cron', [ $this, 'process_auto_replies' ] );
     }
@@ -44,15 +47,15 @@ class CommentModerator {
     
         // Response format for AI prompt
 
-        $prompt = $comment_content." This is post comment, If it is not spam, generate and return a response message (string) based on the content. If it is spam, return false. The tone of the response should align with the $response_mode, and special characters should be ignored in the response message.";
-    
-        // AI Prompt
+        $prompt = $comment_content." This is post comment, If it is not spam, generate and return a response message (string) based on the content. The tone of the response should align with the $response_mode, and special characters should be ignored in the response message. If it is spam, just return false (boolean).";
     
         // Get the AI response
         $response_data = $ai_client->generateContent($prompt);
+
+        // error_log( 'AI response: ' . print_r( $response_data, true ) );
     
         // If the response says it's spam, mark the comment as spam
-        if ( isset($response_data) && $response_data === 'true' ) {
+        if ( isset($response_data) && $response_data === 'false' ) {
             wp_spam_comment( $comment_ID );
         }
     
@@ -73,12 +76,6 @@ class CommentModerator {
      * This function is hooked to the cron job and will run periodically.
      */
     public function process_auto_replies() {
-        // Get the response relay time from plugin settings (default: 5000 milliseconds)
-        $relay_time_ms = (int) get_option( 'response_relay_time', 5000 );
-
-        // Convert relay time to seconds for comparison
-        $relay_time_seconds = $relay_time_ms / 1000;
-
         // Query all comments that are awaiting an AI reply
         $comments_query = new \WP_Comment_Query( [
             'meta_key'    => '_ai_reply_message',
@@ -90,10 +87,7 @@ class CommentModerator {
             $comment_id = $comment->comment_ID;
             $reply_time = get_comment_meta( $comment_id, '_ai_reply_time', true );
 
-            // Check if the relay time has passed since the comment was approved
-            if ( ( time() - $reply_time ) >= $relay_time_seconds ) {
-                $this->send_auto_reply( $comment_id );
-            }
+            $this->send_auto_reply( $comment_id );
         }
     }
 
