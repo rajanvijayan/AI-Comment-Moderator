@@ -122,13 +122,13 @@ class SettingsPage {
                 <!-- API Settings Tab -->
                 <div id="api-settings" class="settings-section" style="display:none;">
                     <h2>API Settings</h2>
-                    <p class="description">Enter your API Secret Key here. <a href="https://aistudio.google.com/app/apikey" target="_blank">Get your API key here</a></p>
+                    <p class="description">Enter your API key. Ensure it's correct to avoid errors in moderation.</p>
                     <table class="form-table">
                         <tr valign="top">
                             <th scope="row">API Key</th>
                             <td>
                                 <input type="password" name="api_key" class="regular-text" value="<?php echo esc_attr( get_option( 'api_key' ) ); ?>" />
-                                <p class="description">Enter your API key. Ensure it's correct to avoid errors in moderation.</p>
+                                <p class="description">Enter your API Secret Key here. <a href="https://aistudio.google.com/app/apikey" target="_blank">Get your API key here</a></p>
                             </td>
                         </tr>
                     </table>
