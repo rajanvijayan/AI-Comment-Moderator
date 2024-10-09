@@ -1,32 +1,47 @@
-# AI Comment Moderator
+# AI Comment Moderator Plugin
 
-**AI Comment Moderator** is a WordPress plugin that uses AI to moderate comments by detecting spam and automatically responding based on predefined settings.
+## Overview
+
+The AI Comment Moderator plugin automates comment moderation on your WordPress site, providing customizable AI-driven responses.
 
 ## Features
-- Set spam score sensitivity (1-10)
-- Auto-response functionality with multiple response modes (Professional, Friendly, Humorous, etc.)
-- API Key integration for AI services
-- Log page to view all moderated comments and responses
-- Cron job for continuous comment moderation
+
+- **Automated Moderation**: Automatically checks and moderates comments.
+- **Custom Response Modes**: Choose how the AI responds
+- **Settings Page**: Easily manage your settings.
+- **Customizable Schedule**: Set how often comments are checked.
 
 ## Installation
 
-1. Clone or download the plugin.
-2. Place the `ai-comment-moderator` folder in your WordPress `/wp-content/plugins/` directory.
-3. Run `composer install` to generate the autoloader.
-4. Activate the plugin in the WordPress admin panel.
+1. Download the [plugin ZIP file](https://github.com/rajanvijayan/ai-comment-moderator/releases).
+2. Go to **Plugins > Add New** in your WordPress admin.
+3. Click **Upload Plugin**, select the ZIP file, and click **Install Now**.
+4. Activate the plugin.
+
+## Configuration
+
+### Basic Settings
+
+- **Auto Response**: Enable or disable automatic replies.
+- **Response Mode**: Select the tone for AI responses.
+- **Cron Schedule Time**: Set how often to check for comments.
+
+### API Settings
+
+- **API Key**: Enter your API key for AI service access.
+
+### Moderator User
+
+- **Select Moderator**: Choose a user to manage comments.
 
 ## Usage
 
-1. Go to **Settings > Comment Moderator** to configure your moderation settings.
-2. Set the allowed spam score, enable auto-response, and select the desired response mode.
-3. Enter your API key for the AI spam detection service.
+After activation, go to **Settings > Comment Moderator** to configure your options.
 
-## Requirements
+## Support
 
-- WordPress 5.5+
-- PHP 7.4+
+For issues or questions, open an issue in the repository or contact support.
 
 ## License
 
-This plugin is licensed under the GPL-2.0-or-later license.
+This plugin is licensed under the MIT License.
